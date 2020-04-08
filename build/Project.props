@@ -1,0 +1,11 @@
+<Project>
+  <PropertyGroup>
+    <RepositoryUrl>https://github.com/smack0007/JEFTDotNet.git</RepositoryUrl>
+
+    <PackageProjectUrl>https://github.com/smack0007/JEFTDotNet/</PackageProjectUrl>
+    <PackageTags></PackageTags>
+
+    <LangVersion>8.0</LangVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+</Project>
