@@ -10,7 +10,7 @@ namespace JEFTDotNet
 {
     internal static class FreeType
     {
-        private const string Library = @"win-x64\freetype";
+        private const string Library = @"runtimes\win-x64\native\freetype";
 
         public const int FT_LOAD_RENDER = (1 << 2);
         public const uint FT_OPEN_STREAM = 0x2;

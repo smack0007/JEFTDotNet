@@ -1,0 +1,9 @@
+<Project>
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+  
+  <Import Project="$(RepositoryRootDirectory)build/CopyDependencies.targets" />
+
+  <ItemGroup>
+    <ProjectReference Include="$(RepositoryRootDirectory)src/JEFTDotNet/JEFTDotNet.csproj" />
+  </ItemGroup>
+</Project>

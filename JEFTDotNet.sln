@@ -5,6 +5,7 @@ VisualStudioVersion = 16.0.29926.136
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "JEFTDotNet", "JEFTDotNet", "{E86946D7-DCCB-41C3-900F-DD89E2B2976D}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		Directory.Build.props = Directory.Build.props
 		License.txt = License.txt
 		Readme.md = Readme.md
@@ -19,6 +20,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{D08ACD33
 		build\CopyDependencies.targets = build\CopyDependencies.targets
 		build\Project.props = build\Project.props
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{D401FFAE-05D0-4FF8-B49D-119722D093CF}"
+	ProjectSection(SolutionItems) = preProject
+		samples\Directory.Build.props = samples\Directory.Build.props
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloWorld", "samples\HelloWorld\HelloWorld.csproj", "{C6547FB4-0756-473B-B663-A9AC89A19872}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,6 +50,18 @@ Global
 		{CE4FB198-8A64-47ED-A12F-3487378DE127}.Release|x64.Build.0 = Release|Any CPU
 		{CE4FB198-8A64-47ED-A12F-3487378DE127}.Release|x86.ActiveCfg = Release|Any CPU
 		{CE4FB198-8A64-47ED-A12F-3487378DE127}.Release|x86.Build.0 = Release|Any CPU
+		{C6547FB4-0756-473B-B663-A9AC89A19872}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6547FB4-0756-473B-B663-A9AC89A19872}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6547FB4-0756-473B-B663-A9AC89A19872}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C6547FB4-0756-473B-B663-A9AC89A19872}.Debug|x64.Build.0 = Debug|Any CPU
+		{C6547FB4-0756-473B-B663-A9AC89A19872}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C6547FB4-0756-473B-B663-A9AC89A19872}.Debug|x86.Build.0 = Debug|Any CPU
+		{C6547FB4-0756-473B-B663-A9AC89A19872}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6547FB4-0756-473B-B663-A9AC89A19872}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6547FB4-0756-473B-B663-A9AC89A19872}.Release|x64.ActiveCfg = Release|Any CPU
+		{C6547FB4-0756-473B-B663-A9AC89A19872}.Release|x64.Build.0 = Release|Any CPU
+		{C6547FB4-0756-473B-B663-A9AC89A19872}.Release|x86.ActiveCfg = Release|Any CPU
+		{C6547FB4-0756-473B-B663-A9AC89A19872}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -50,6 +70,8 @@ Global
 		{C2FD7FC7-8F1D-4479-B937-B1DA39363805} = {E86946D7-DCCB-41C3-900F-DD89E2B2976D}
 		{CE4FB198-8A64-47ED-A12F-3487378DE127} = {C2FD7FC7-8F1D-4479-B937-B1DA39363805}
 		{D08ACD33-B925-495A-95CE-4538A237E0C5} = {E86946D7-DCCB-41C3-900F-DD89E2B2976D}
+		{D401FFAE-05D0-4FF8-B49D-119722D093CF} = {E86946D7-DCCB-41C3-900F-DD89E2B2976D}
+		{C6547FB4-0756-473B-B663-A9AC89A19872} = {D401FFAE-05D0-4FF8-B49D-119722D093CF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {23AD3864-CB3D-4610-9876-F31E83F446B4}
