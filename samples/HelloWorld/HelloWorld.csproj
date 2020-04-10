@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -7,8 +7,11 @@
 
   <ItemGroup>
     <PackageReference Include="ImageDotNet" Version="20.2.2" />
+
+    <!-- I use this sometimes for debugging. -->
+    <!--<ProjectReference Include="$(RepositoryRootDirectory)..\ImageDotNet\src\ImageDotNet\ImageDotNet.csproj" />-->
     
-    <Content Include="..\..\ext\fonts\OpenSans\OpenSans-Regular.ttf" Link="OpenSans-Regular.ttf">
+    <Content Include="$(RepositoryRootDirectory)ext\fonts\OpenSans\OpenSans-Regular.ttf" Link="OpenSans-Regular.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

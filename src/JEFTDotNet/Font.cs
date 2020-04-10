@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using static JEFTDotNet.FreeType;
@@ -30,48 +31,6 @@ namespace JEFTDotNet
                 throw new JEFTDotNetException("Could not open font.");
 
             return new Font(library, streamWrapper, face);
-
-            //FT_Set_Pixel_Sizes(face, 0, fontSize);
-
-            //if (FT_Load_Char(face, 'M', FT_LOAD_RENDER) != 0)
-            //    throw new JEFTDotNetException($"Could not load character 'M'.");
-
-            //var glyph = face.Glyph();
-            //var metrics = glyph.Metrics();
-            //var bitmap = glyph.Bitmap();
-            //fontWidth = (int)bitmap.width;
-            //fontHeight = (int)bitmap.rows;
-            //fontLineHeight = (int)(metrics.height / 64);
-
-            //foreach (var ch in characters)
-            //{
-            //    if (FT_Load_Char(face, ch, FT_LOAD_RENDER) != 0)
-            //        throw new PixelCannonException($"Could not load character '{ch}'.");
-
-            //    glyph = face.Glyph();
-            //    metrics = glyph.Metrics();
-            //    bitmap = glyph.Bitmap();
-            //    var width = (int)(metrics.width / 64);
-            //    var height = (int)(metrics.height / 64);
-            //    var offsetX = (int)(metrics.horiBearingX / 64);
-            //    var offsetY = fontLineHeight - (int)(metrics.horiBearingY / 64);
-            //    var advance = glyph.Advance();
-
-            //    characterSurfaces[ch] = RenderGlyph(bitmap, alpha);
-
-            //    var data = new Character()
-            //    {
-            //        Width = width,
-            //        Height = height,
-            //        OffsetX = offsetX,
-            //        OffsetY = offsetY,
-            //        AdvanceX = (int)(advance.x / 64),
-            //        AdvanceY = (int)(advance.y / 64),
-            //    };
-
-            //    characterData[ch] = data;
-
-
         }
 
         public void Dispose()
@@ -80,7 +39,7 @@ namespace JEFTDotNet
             _streamWrapper.Dispose();
         }
 
-        public FontImage RenderCharacter(char ch, int size)
+        public FontImage RenderCharacter(int size, char ch)
         {
             FT_Set_Pixel_Sizes(_face, 0, (uint)size);
 
@@ -88,14 +47,66 @@ namespace JEFTDotNet
                 throw new JEFTDotNetException($"Could not load character '{ch}'.");
 
             var glyph = _face.Glyph();
-            var metrics = glyph.Metrics();
             var bitmap = glyph.Bitmap();
-            var width = (int)(metrics.width / 64);
-            var height = (int)(metrics.height / 64);
 
             var bitmapData = ConvertBitmap(bitmap);
 
             return new FontImage(bitmapData.width, bitmapData.height, bitmapData.pixels);
+        }
+
+        public FontAtlas RenderAtlas(int size, IEnumerable<char> characters)
+        {
+            int fontWidth = 0;
+            int fontHeight = 0;
+            int fontLineHeight = 0;
+            var characterImages = new Dictionary<char, FontImage>();
+            var characterData = new Dictionary<char, FontAtlasCharacter>();
+
+            FT_Set_Pixel_Sizes(_face, 0, (uint)size);
+
+            if (FT_Load_Char(_face, 'M', FT_LOAD_RENDER) != 0)
+                throw new JEFTDotNetException($"Could not load character 'M'.");
+
+            var glyph = _face.Glyph();
+            var metrics = glyph.Metrics();
+            var bitmap = glyph.Bitmap();
+            fontWidth = (int)bitmap.width;
+            fontHeight = (int)bitmap.rows;
+            fontLineHeight = (int)(metrics.height / 64);
+
+            foreach (var ch in characters)
+            {
+                if (FT_Load_Char(_face, ch, FT_LOAD_RENDER) != 0)
+                    throw new JEFTDotNetException($"Could not load character '{ch}'.");
+
+                glyph = _face.Glyph();
+                metrics = glyph.Metrics();
+                bitmap = glyph.Bitmap();
+                var width = (int)(metrics.width / 64);
+                var height = (int)(metrics.height / 64);
+                var offsetX = (int)(metrics.horiBearingX / 64);
+                var offsetY = fontLineHeight - (int)(metrics.horiBearingY / 64);
+                var advance = glyph.Advance();
+
+                var bitmapData = ConvertBitmap(bitmap);
+                characterImages[ch] = new FontImage(bitmapData.width, bitmapData.height, bitmapData.pixels);
+
+                var data = new FontAtlasCharacter()
+                {
+                    Width = width,
+                    Height = height,
+                    OffsetX = offsetX,
+                    OffsetY = offsetY,
+                    AdvanceX = (int)(advance.x / 64),
+                    AdvanceY = (int)(advance.y / 64),
+                };
+
+                characterData[ch] = data;
+            }
+
+            var image = MergeImages(characterImages, characterData, fontWidth, fontHeight);
+            
+            return new FontAtlas(image, characterData);
         }
 
         private static (int width, int height, byte[] pixels) ConvertBitmap(FT_Bitmap bitmap)
@@ -107,6 +118,44 @@ namespace JEFTDotNet
             Marshal.Copy(bitmap.buffer, pixels, 0, pixels.Length);
 
             return ((int)bitmap.pitch, (int)bitmap.rows, pixels);
+        }
+
+        private static FontImage MergeImages(
+           Dictionary<char, FontImage> characterImages,
+           Dictionary<char, FontAtlasCharacter> characterData,
+           int fontWidth,
+           int fontHeight)
+        {
+            var halfCharacterCount = characterData.Values.Count / 4;
+            var imageWidth = (int)MathHelper.RoundClosestPowerOf2((uint)(halfCharacterCount * fontWidth));
+
+            var charactersPerLine = imageWidth / fontWidth;
+            var neededLines = (int)Math.Ceiling(characterData.Values.Count / (float)charactersPerLine);
+            var imageHeight = (int)MathHelper.RoundNextPowerOf2((uint)(fontHeight * neededLines));
+
+            var result = new FontImage(imageWidth, imageHeight);
+
+            var x = 0;
+            var y = 0;
+            foreach (var character in characterImages.Keys)
+            {
+                var image = characterImages[character];
+                var data = characterData[character];
+
+                if (x + image.Width > result.Width)
+                {
+                    y += fontHeight;
+                    x = 0;
+                }
+
+                result.Blit(image, x, y);
+                data.X = x;
+                data.Y = y;
+
+                x += image.Width;
+            }
+
+            return result;
         }
     }
 }
