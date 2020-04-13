@@ -13,11 +13,11 @@ namespace HelloWorld
             
             var character = font.RenderCharacter(48, 'M');
             var image = new Image<Rgba32>(character.Width, character.Height, TransformPixels(character, 0));
-            image.SaveTga("M.tga");
+            image.SavePng("M.png");
 
             var atlas = font.RenderAtlas(48, Enumerable.Range(32, 126 - 32).Select(x => (char)x));
             image = new Image<Rgba32>(atlas.Image.Width, atlas.Image.Height, TransformPixels(atlas.Image, 0));
-            image.SaveTga("Font.tga");
+            image.SavePng("Font.png");
         }
 
         private static Rgba32[] TransformPixels(FontImage image, byte alpha)
