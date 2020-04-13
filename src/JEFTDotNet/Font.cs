@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using static JEFTDotNet.FreeType;
 
@@ -56,12 +57,6 @@ namespace JEFTDotNet
 
         public FontAtlas RenderAtlas(int size, IEnumerable<char> characters)
         {
-            int fontWidth = 0;
-            int fontHeight = 0;
-            int fontLineHeight = 0;
-            var characterImages = new Dictionary<char, FontImage>();
-            var characterData = new Dictionary<char, FontAtlasCharacter>();
-
             FT_Set_Pixel_Sizes(_face, 0, (uint)size);
 
             if (FT_Load_Char(_face, 'M', FT_LOAD_RENDER) != 0)
@@ -70,9 +65,12 @@ namespace JEFTDotNet
             var glyph = _face.Glyph();
             var metrics = glyph.Metrics();
             var bitmap = glyph.Bitmap();
-            fontWidth = (int)bitmap.width;
-            fontHeight = (int)bitmap.rows;
-            fontLineHeight = (int)(metrics.height / 64);
+            int fontWidth = (int)bitmap.width;
+            int fontHeight = (int)bitmap.rows;
+            int fontLineHeight = (int)(metrics.height / 64);
+
+            var characterImages = new Dictionary<char, FontImage>();
+            var characterData = new Dictionary<char, FontAtlasCharacter>();
 
             foreach (var ch in characters)
             {
@@ -104,7 +102,7 @@ namespace JEFTDotNet
                 characterData[ch] = data;
             }
 
-            var image = MergeImages(characterImages, characterData, fontWidth, fontHeight);
+            var image = MergeImages(characterImages, characterData, fontWidth);
             
             return new FontAtlas(image, characterData);
         }
@@ -123,15 +121,16 @@ namespace JEFTDotNet
         private static FontImage MergeImages(
            Dictionary<char, FontImage> characterImages,
            Dictionary<char, FontAtlasCharacter> characterData,
-           int fontWidth,
-           int fontHeight)
+           int fontWidth)
         {
-            var halfCharacterCount = characterData.Values.Count / 4;
-            var imageWidth = (int)MathHelper.RoundClosestPowerOf2((uint)(halfCharacterCount * fontWidth));
+            var largestCharacterHeight = characterImages.Values.Max(x => x.Height);
+
+            var oneFourthCharacterCount = characterData.Values.Count / 4;
+            var imageWidth = (int)MathHelper.RoundClosestPowerOf2((uint)(oneFourthCharacterCount * fontWidth));
 
             var charactersPerLine = imageWidth / fontWidth;
             var neededLines = (int)Math.Ceiling(characterData.Values.Count / (float)charactersPerLine);
-            var imageHeight = (int)MathHelper.RoundNextPowerOf2((uint)(fontHeight * neededLines));
+            var imageHeight = (int)MathHelper.RoundNextPowerOf2((uint)(largestCharacterHeight * neededLines));
 
             var result = new FontImage(imageWidth, imageHeight);
 
@@ -144,7 +143,7 @@ namespace JEFTDotNet
 
                 if (x + image.Width > result.Width)
                 {
-                    y += fontHeight;
+                    y += largestCharacterHeight;
                     x = 0;
                 }
 
@@ -154,6 +153,15 @@ namespace JEFTDotNet
 
                 x += image.Width;
             }
+
+            y += largestCharacterHeight;
+
+            var temp = (int)MathHelper.RoundNextPowerOf2(512);
+
+            // Crop the bottom of the image.
+            var cropToHeight = (int)MathHelper.RoundNextPowerOf2((uint)y);
+            if (cropToHeight < result.Height)
+                result.CropToHeight(cropToHeight);
 
             return result;
         }

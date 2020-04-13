@@ -4,11 +4,11 @@ namespace JEFTDotNet
 {
     public class FontImage
     {
-        private readonly byte[] _pixels;
+        private byte[] _pixels;
 
         public int Width { get; }
 
-        public int Height { get; }
+        public int Height { get; private set; }
 
         public int Length => _pixels.Length;
 
@@ -36,6 +36,15 @@ namespace JEFTDotNet
                     _pixels[(destY + srcY) * Width + destX + srcX] = image[srcX, srcY];
                 }
             }
+        }
+
+        internal void CropToHeight(int height)
+        {
+            var newPixels = new byte[Width * height];
+            Buffer.BlockCopy(_pixels, 0, newPixels, 0, newPixels.Length);
+
+            Height = height;
+            _pixels = newPixels;
         }
     }
 }
