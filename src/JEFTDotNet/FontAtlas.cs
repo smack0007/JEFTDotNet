@@ -6,14 +6,19 @@ namespace JEFTDotNet
 {
     public class FontAtlas
     {
-        private readonly Dictionary<char, FontAtlasCharacter> _characterData;
+        private readonly Dictionary<char, FontAtlasCharacter> _characters;
 
         public FontImage Image { get; }
 
-        internal FontAtlas(FontImage image, Dictionary<char, FontAtlasCharacter> characterData)
+        public int LineHeight { get; }
+
+        public FontAtlasCharacter this[char ch] => _characters[ch];
+
+        internal FontAtlas(FontImage image, Dictionary<char, FontAtlasCharacter> characters, int lineHeight)
         {
             Image = image;
-            _characterData = characterData;
+            _characters = characters;
+            LineHeight = lineHeight;
         }
     }
 }

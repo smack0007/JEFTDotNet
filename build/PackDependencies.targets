@@ -1,0 +1,9 @@
+﻿<Project>
+  <Import Project="$(MSBuildThisFileDiretory)CopyDependencies.targets" />
+
+  <ItemGroup>
+    <None Include="$(FreeTypeDirectory)FTL.license" Visible="false" Pack="true" PackagePath=" lib\$(TargetFramework)\" />
+    <None Include="$(FreeTypeDirectory)win32\freetype.dll" Visible="false" Pack="true" PackagePath="runtimes\win-x64\native" />
+    <None Include="$(FreeTypeDirectory)win64\freetype.dll" Visible="false" Pack="true" PackagePath="runtimes\win-x86\native" />
+  </ItemGroup>
+</Project>

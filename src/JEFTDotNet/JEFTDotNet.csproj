@@ -4,6 +4,6 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
-  <Import Project="$(RepositoryRootDirectory)build/CopyDependencies.targets" />
+  <Import Project="$(RepositoryRootDirectory)build/PackDependencies.targets" />
   
 </Project>

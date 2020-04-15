@@ -66,7 +66,6 @@ namespace JEFTDotNet
             var metrics = glyph.Metrics();
             var bitmap = glyph.Bitmap();
             int fontWidth = (int)bitmap.width;
-            int fontHeight = (int)bitmap.rows;
             int fontLineHeight = (int)(metrics.height / 64);
 
             var characterImages = new Dictionary<char, FontImage>();
@@ -104,7 +103,7 @@ namespace JEFTDotNet
 
             var image = MergeImages(characterImages, characterData, fontWidth);
             
-            return new FontAtlas(image, characterData);
+            return new FontAtlas(image, characterData, fontLineHeight);
         }
 
         private static (int width, int height, byte[] pixels) ConvertBitmap(FT_Bitmap bitmap)
@@ -115,7 +114,7 @@ namespace JEFTDotNet
             var pixels = new byte[bitmap.rows * bitmap.pitch];
             Marshal.Copy(bitmap.buffer, pixels, 0, pixels.Length);
 
-            return ((int)bitmap.pitch, (int)bitmap.rows, pixels);
+            return (bitmap.pitch, (int)bitmap.rows, pixels);
         }
 
         private static FontImage MergeImages(
@@ -155,8 +154,6 @@ namespace JEFTDotNet
             }
 
             y += largestCharacterHeight;
-
-            var temp = (int)MathHelper.RoundNextPowerOf2(512);
 
             // Crop the bottom of the image.
             var cropToHeight = (int)MathHelper.RoundNextPowerOf2((uint)y);

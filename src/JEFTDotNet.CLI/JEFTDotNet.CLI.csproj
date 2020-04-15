@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>jeft</AssemblyName>
+    <PackageId>JEFTDotNet.CLI</PackageId>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>jeft</ToolCommandName>
+  </PropertyGroup>
+
+  <Import Project="$(RepositoryRootDirectory)build/PackDependencies.targets" />
+  
+  <ItemGroup>
+    <ProjectReference Include="..\JEFTDotNet\JEFTDotNet.csproj" />
+
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="3.0.0" />
+    <PackageReference Include="ImageDotNet" Version="20.4.0" />
+  </ItemGroup>
+
+</Project>
