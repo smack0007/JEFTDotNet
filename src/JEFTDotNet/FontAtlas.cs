@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,18 +7,16 @@ namespace JEFTDotNet
 {
     public class FontAtlas
     {
-        private readonly Dictionary<char, FontAtlasCharacter> _characters;
-
         public FontImage Image { get; }
 
-        public int LineHeight { get; }
+        public Dictionary<char, FontAtlasCharacter> Characters { get; }
 
-        public FontAtlasCharacter this[char ch] => _characters[ch];
+        public int LineHeight { get; }
 
         internal FontAtlas(FontImage image, Dictionary<char, FontAtlasCharacter> characters, int lineHeight)
         {
             Image = image;
-            _characters = characters;
+            Characters = characters;
             LineHeight = lineHeight;
         }
     }

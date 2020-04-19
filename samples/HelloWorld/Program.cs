@@ -2,6 +2,8 @@
 using JEFTDotNet;
 using ImageDotNet;
 using System.Linq;
+using Newtonsoft.Json;
+using System.IO;
 
 namespace HelloWorld
 {
@@ -18,6 +20,9 @@ namespace HelloWorld
             var atlas = font.RenderAtlas(48, Enumerable.Range(32, 126 - 32).Select(x => (char)x));
             image = new Image<Rgba32>(atlas.Image.Width, atlas.Image.Height, TransformPixels(atlas.Image, 0));
             image.SavePng("Font.png");
+
+            var json = JsonConvert.SerializeObject(atlas, Formatting.Indented);
+            File.WriteAllText("Font.json", json);
         }
 
         private static Rgba32[] TransformPixels(FontImage image, byte alpha)

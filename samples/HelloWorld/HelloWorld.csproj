@@ -5,12 +5,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="ImageDotNet" Version="20.4.0" />
-
-    <!-- I use this sometimes for debugging. -->
-    <!--<ProjectReference Include="$(RepositoryRootDirectory)..\ImageDotNet\src\ImageDotNet\ImageDotNet.csproj" />-->
-    
+  <ItemGroup>    
     <Content Include="$(RepositoryRootDirectory)ext\fonts\OpenSans\OpenSans-Regular.ttf" Link="OpenSans-Regular.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

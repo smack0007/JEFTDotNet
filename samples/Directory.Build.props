@@ -5,5 +5,11 @@
 
   <ItemGroup>
     <ProjectReference Include="$(RepositoryRootDirectory)src/JEFTDotNet/JEFTDotNet.csproj" />
+
+    <!-- I use this sometimes for debugging. -->
+    <!--<ProjectReference Include="$(RepositoryRootDirectory)..\ImageDotNet\src\ImageDotNet\ImageDotNet.csproj" />-->
+
+    <PackageReference Include="ImageDotNet" Version="20.4.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 </Project>

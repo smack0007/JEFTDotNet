@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using McMaster.Extensions.CommandLineUtils;
+using Newtonsoft.Json;
 
 namespace JEFTDotNet.CLI
 {
@@ -20,8 +21,15 @@ namespace JEFTDotNet.CLI
 
             app.Command("generateFontAtlas", generateFontAtlasCmd =>
             {
-                var input = generateFontAtlasCmd.Argument<string>("input", "The input TTF file.");
-                var outputImage = generateFontAtlasCmd.Argument<string>("outputImage", "The output image file.");
+                generateFontAtlasCmd.Description = "Generates a font atlas.";
+
+                var input = generateFontAtlasCmd.Argument<string>("input", "The input TTF file.").IsRequired();
+                var outputSize = generateFontAtlasCmd.Argument<int>("outputSize", "The size of the rendered font.").IsRequired();
+                var outputImage = generateFontAtlasCmd.Argument<string>("outputImage", "The output image file.").IsRequired();
+                var outputJson = generateFontAtlasCmd.Argument<string>("outputJson", "The output json file.").IsRequired();
+
+                var startChar = generateFontAtlasCmd.Option<int>("--startChar", "The start character.", CommandOptionType.SingleValue);
+                var endChar = generateFontAtlasCmd.Option<int>("--endChar", "The start character.", CommandOptionType.SingleValue);
 
                 generateFontAtlasCmd.OnExecute(() =>
                 {
@@ -31,13 +39,31 @@ namespace JEFTDotNet.CLI
                         return 1;
                     }
 
+                    if (outputSize.Value == null)
+                    {
+                        Console.Error.WriteLine("Please specify the size for the rendered font.");
+                        return 1;
+                    }
+
                     if (outputImage.Value == null)
                     {
                         Console.Error.WriteLine("Please specify an output png file.");
                         return 1;
                     }
 
-                    return GenerateFontAtlas(input.Value, outputImage.Value);
+                    if (outputJson.Value == null)
+                    {
+                        Console.Error.WriteLine("Please specify an output json file.");
+                        return 1;
+                    }
+
+                    return GenerateFontAtlas(
+                        input.ParsedValue,
+                        outputSize.ParsedValue,
+                        outputImage.ParsedValue,
+                        outputJson.ParsedValue,
+                        startChar.HasValue() ? (int?)startChar.ParsedValue : null,
+                        endChar.HasValue() ? (int?)endChar.ParsedValue : null);
                 });
             });
 
@@ -51,12 +77,29 @@ namespace JEFTDotNet.CLI
             return app.Execute(args);
         }
 
-        private static int GenerateFontAtlas(string input, string outputImage)
+        private static int GenerateFontAtlas(
+            string input,
+            int outputSize,
+            string outputImage,
+            string outputJsonFile,
+            int? startChar,
+            int? endChar)
         {
+            if (startChar == null)
+                startChar = 32;
+
+            if (endChar == null)
+                endChar = 126;
+
             using var font = Font.LoadFromFile(input);
-            var atlas = font.RenderAtlas(48, Enumerable.Range(32, 126 - 32).Select(x => (char)x));
+            var atlas = font.RenderAtlas(outputSize, Enumerable.Range(startChar.Value, endChar.Value - startChar.Value).Select(x => (char)x));
+            
             var image = ImageHelper.Convert(atlas);
             image.SavePng(outputImage);
+
+            var json = JsonConvert.SerializeObject(atlas, Formatting.Indented);
+            File.WriteAllText(outputJsonFile, json);
+
             return 0;
         }
     }
