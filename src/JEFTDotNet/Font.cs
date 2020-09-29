@@ -127,6 +127,9 @@ namespace JEFTDotNet
             var oneFourthCharacterCount = characterData.Values.Count / 4;
             var imageWidth = (int)MathHelper.RoundClosestPowerOf2((uint)(oneFourthCharacterCount * fontWidth));
 
+            if (imageWidth < fontWidth)
+                imageWidth = fontWidth;
+
             var charactersPerLine = imageWidth / fontWidth;
             var neededLines = (int)Math.Ceiling(characterData.Values.Count / (float)charactersPerLine);
             var imageHeight = (int)MathHelper.RoundNextPowerOf2((uint)(largestCharacterHeight * neededLines));
